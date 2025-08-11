@@ -25,14 +25,6 @@ WNet2D/
 ├─ demo_infer.py # 10-line forward pass demo (1×3×512×512)
 └─ architecture.png # model diagram used in the paper/README
 
-yaml
-复制
-编辑
-
-> Tip: If you later reorganize into a package (e.g., `src/wnet2d/…`), keep this section updated.
-
----
-
 ## 💻 Environment & Installation
 
 **Tested environment (paper reference):**
@@ -57,16 +49,14 @@ pip install numpy opencv-python scikit-image scipy tqdm einops
 Run a single forward pass with a 512×512 tensor (no dataset required):
 
 bash
-复制
-编辑
+
 python demo_infer.py
 # Expected: prints input/output tensor shapes, e.g., (1, 3, 512, 512) -> (1, 1, 512, 512)
 (Optional) Load weights
 When checkpoints are released, you can load them in demo_infer.py:
 
 python
-复制
-编辑
+
 ckpt = torch.load("wnet2d_xxx.pth", map_location="cpu")
 model.load_state_dict(ckpt, strict=False)
 📊 Datasets
@@ -104,21 +94,6 @@ v1.1.0 (planned): Training/evaluation scripts and config examples for Kvasir-SEG
 v1.2.0 (planned): Pretrained checkpoints and reproducibility logs; FLOPs/latency scripts.
 
 If you need a particular script first, please open an issue and we’ll prioritize it.
-
-📝 Citation
-If you find this repository useful, please cite the paper (or temporarily cite the repo):
-
-bibtex
-复制
-编辑
-@misc{WNet2D_Repo_2025,
-  title        = {WNet2D: Enhanced Dual-Path Architecture with Multi-Scale LSB, Improved GSB, and Mamba SSM for Efficient Medical Image Segmentation},
-  author       = {Li, Dianyuan and Xin, Yixuan and Li, Qinghua and Chao, Zhen},
-  note         = {Code repository, staged release},
-  year         = {2025},
-  howpublished = {\url{https://github.com/<yourname>/WNet2D}}
-}
-(Replace with the IEEE Access BibTeX once the paper is published.)
 
 📄 License
 Released under MIT (or Apache-2.0). See LICENSE for details.
