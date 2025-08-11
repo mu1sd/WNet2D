@@ -1,64 +1,125 @@
-WNet2D
-WNet2D is a lightweight dual-path medical image segmentation model featuring:
+# WNet2D
 
-MS-LSB (Multi-Scale Local Scope Block): Dilated convolutions for enhanced shallow edge and texture details.
+**WNet2D** is a lightweight **dual-path** medical image segmentation model featuring:
+- **MS-LSB (Multi-Scale Local Scope Block):** dilated convolutions to enhance shallow edge/texture details.
+- **E-GSB (Enhanced Global Scope Block):** parallel 3×3 / 5×5 / 7×7 average pooling branches, followed by a 1×1 conv and a lightweight MLP (GELU) in a residual design to improve global semantic consistency.
+- **Mamba SSM (deepest stage):** efficient and stable long-range dependency modeling with low compute.
 
-E-GSB (Enhanced Global Scope Block): Parallel 3×3 / 5×5 / 7×7 average pooling branches, followed by a 1×1 convolution and a lightweight MLP (GELU), in a residual design to improve global semantic consistency.
+> **Status — staged release:** this repository currently provides the **reference model implementation** and a **minimal inference demo** for inspection and quick sanity checks. **Training/evaluation scripts and pretrained checkpoints will be added in a subsequent update** (see *Roadmap*).
 
-Mamba SSM (deepest stage): Efficient and stable long-range dependency modeling with low computational cost.
+---
 
-Status: Minimal release — includes the model implementation and a simple inference demo. Training and full evaluation scripts may be released later.
+## 🖼️ Model Overview
 
-📂 Project Structure
+<p align="center">
+  <img src="architecture.png" alt="WNet2D Architecture" width="760">
+</p>
+
+---
+
+## 📂 Project Structure
 
 WNet2D/
 ├─ README.md
-├─ model.py    
-└─ demo_infer.py     
-💻 Environment & Installation
-Reference environment (from the paper):
+├─ model.py # WNet2D with MS-LSB / E-GSB / Mamba SSM (minimal reference)
+├─ demo_infer.py # 10-line forward pass demo (1×3×512×512)
+└─ architecture.png # model diagram used in the paper/README
 
-Hardware: NVIDIA GeForce RTX 4090 (22.15 GB VRAM), x86_64 CPU (8 cores), 15.57 GB RAM
+yaml
+复制
+编辑
 
-OS: Ubuntu 22.04 (Linux 6.5.0-28)
+> Tip: If you later reorganize into a package (e.g., `src/wnet2d/…`), keep this section updated.
 
-Software: Python 3.9.23, PyTorch 2.1.2 (CUDA 11.8), cuDNN 8.7
+---
 
-Quick install:
+## 💻 Environment & Installation
 
-bash
+**Tested environment (paper reference):**
+- **Hardware:** NVIDIA GeForce RTX 4090 (22.15 GB VRAM), x86_64 CPU (8 cores), 15.57 GB RAM  
+- **OS:** Ubuntu 22.04 (Linux 6.5.0-28)  
+- **Software:** Python 3.9.23, PyTorch 2.1.2 (CUDA 11.8), cuDNN 8.7
 
-# (Optional) create a virtual environment
+**Quick install (example):**
+```bash
+# (Optional) create a virtual env
 conda create -n wnet2d python=3.9 -y
 conda activate wnet2d
 
-# Install PyTorch (select CUDA version matching your system from the official PyTorch site)
+# Install PyTorch (choose the CUDA build that matches your system from the official PyTorch site)
 pip install torch==2.1.2
 
-# Install common dependencies
-pip install numpy opencv-python scikit-image scipy tqdm einops mamba-ssm
+# Common deps (minimal; extend as needed)
+pip install numpy opencv-python scikit-image scipy tqdm einops
+# (Optional) if you plan to use Mamba SSM:
+# pip install mamba-ssm
+🚀 Quick Start (Minimal Inference)
+Run a single forward pass with a 512×512 tensor (no dataset required):
+
+bash
+复制
+编辑
+python demo_infer.py
+# Expected: prints input/output tensor shapes, e.g., (1, 3, 512, 512) -> (1, 1, 512, 512)
+(Optional) Load weights
+When checkpoints are released, you can load them in demo_infer.py:
+
+python
+复制
+编辑
+ckpt = torch.load("wnet2d_xxx.pth", map_location="cpu")
+model.load_state_dict(ckpt, strict=False)
 📊 Datasets
-This paper uses four public datasets: Kvasir-SEG, ISIC 2017, DRIVE, and PH2.
-We do not redistribute raw datasets. Please download them from their official sources and follow their respective licenses and terms of use.
+The paper uses four public datasets: Kvasir-SEG, ISIC 2017, DRIVE, and PH2.
+This repository does not redistribute raw data. Please download them from their official sources and follow their licenses/terms.
 
-📏 Reproducibility Protocol
-To ensure consistency with the paper's results:
+📏 Reproducibility Protocol (Measurement)
+To keep consistency with the paper:
 
-FLOPs: Calculated as 2 × MACs for an input of size 1×3×512×512.
+FLOPs are reported as 2 × MACs for an input 1×3×512×512.
 
-Latency & Peak Memory: Measured in model.eval() mode with batch size = 1, FP32 precision. Perform 50 warm-up runs, then average over 200 timed runs using CUDA events, with torch.cuda.synchronize() between runs.
+Latency & Peak Memory are measured in model.eval() with batch size = 1, FP32.
+Use 50 warm-up runs and report the average of 200 timed runs using CUDA events, with torch.cuda.synchronize() between runs, on a single RTX 4090.
 
 ⚡ Efficiency Summary (from the paper)
-As reported in Table 3 and Figure 7:
+As summarized from Table 3 and Figure 7:
 
 Parameters: ~4M (≈57% of nnWNet), fewer than most Conv/Hybrid baselines (e.g., BCU-Net, CMU-Net, UCTransNet).
 
-FLOPs: ~30M per 512×512 image — 30% lower than nnWNet (43M), far below BCU-Net (454M) and TransAttUNet (356M).
+FLOPs: ~30M per 512×512 image — 30% lower than nnWNet (43M), and far below BCU-Net (454M) and TransAttUNet (356M).
 
 Latency / Memory:
 
-nnU-Net: Lowest latency (3.77 ms) and peak memory (0.82 GB) but lower segmentation accuracy.
+nnU-Net: Lowest latency (3.77 ms) and peak memory (0.82 GB), but lower segmentation accuracy on multiple datasets.
 
-WNet2D: Latency 14.19 ms, peak memory 2.54 GB, offering a balanced trade-off between speed, memory, and segmentation accuracy.
+WNet2D: 14.19 ms latency and 2.54 GB peak memory, offering a practical balance between speed, memory, and segmentation accuracy.
 
-In summary, WNet2D combines strong parameter/compute efficiency with competitive latency and memory usage, making it highly suitable for resource-constrained medical image segmentation deployments.
+Overall, WNet2D combines strong parameter/compute efficiency with competitive latency/memory, suitable for resource-constrained deployments.
+
+🗺️ Roadmap
+v1.0.0 (current): Reference model + minimal inference demo + measurement protocol.
+
+v1.1.0 (planned): Training/evaluation scripts and config examples for Kvasir-SEG / ISIC 2017 / DRIVE / PH2.
+
+v1.2.0 (planned): Pretrained checkpoints and reproducibility logs; FLOPs/latency scripts.
+
+If you need a particular script first, please open an issue and we’ll prioritize it.
+
+📝 Citation
+If you find this repository useful, please cite the paper (or temporarily cite the repo):
+
+bibtex
+复制
+编辑
+@misc{WNet2D_Repo_2025,
+  title        = {WNet2D: Enhanced Dual-Path Architecture with Multi-Scale LSB, Improved GSB, and Mamba SSM for Efficient Medical Image Segmentation},
+  author       = {Li, Dianyuan and Xin, Yixuan and Li, Qinghua and Chao, Zhen},
+  note         = {Code repository, staged release},
+  year         = {2025},
+  howpublished = {\url{https://github.com/<yourname>/WNet2D}}
+}
+(Replace with the IEEE Access BibTeX once the paper is published.)
+
+📄 License
+Released under MIT (or Apache-2.0). See LICENSE for details.
+Disclaimer: This software is for research use only and not for clinical decision-making.
