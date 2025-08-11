@@ -24,8 +24,6 @@ WNet2D/
 ├─ demo_infer.py # minimal forward pass demo (1×3×512×512)
 └─ architecture.png # model diagram used in README/paper
 
-
-
 ---
 
 ## Environment
@@ -114,17 +112,16 @@ markdown
 
 ---
 
-
-### 方法章节
-- **EN:** *The minimal implementation of WNet2D is publicly available at* **https://github.com/mu1sd/WNet2D** *to facilitate inspection and reuse.*  
-
-
-### 实验设置 / Reproducibility 小节
-- **EN:** *Code (model + minimal inference) and the exact measurement protocol (FLOPs=2×MACs @ 1×3×512×512; latency/memory in eval, bs=1, FP32, 50 warm-ups, 200 runs with CUDA events and `torch.cuda.synchronize()`) are provided at* **https://github.com/mu1sd/WNet2D**.  
+### Method
+- *The minimal implementation of WNet2D is publicly available at* **https://github.com/mu1sd/WNet2D** *to facilitate inspection and reuse.*  
 
 
-### 结论 / Code Availability
-- **EN:** *To foster transparency and reuse, we release WNet2D at* **https://github.com/mu1sd/WNet2D**. *Training/evaluation scripts and checkpoints will be added in a subsequent update.*  
+### Experimental Setup
+-*Code (model + minimal inference) and the exact measurement protocol (FLOPs=2×MACs @ 1×3×512×512; latency/memory in eval, bs=1, FP32, 50 warm-ups, 200 runs with CUDA events and `torch.cuda.synchronize()`) are provided at* **https://github.com/mu1sd/WNet2D**.  
+
+
+###  Code Availability
+- *To foster transparency and reuse, we release WNet2D at* **https://github.com/mu1sd/WNet2D**. *Training/evaluation scripts and checkpoints will be added in a subsequent update.*  
 
 ---
 
