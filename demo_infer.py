@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 import torch
-from src.wnet2d.model import WNet2D
+from model import WNet2D
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
