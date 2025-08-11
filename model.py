@@ -9,9 +9,7 @@ BN = nn.BatchNorm2d
 ACT = nn.GELU
 
 class MSLSB(nn.Module):
-    """Multi-Scale Local Scope Block (简化版):
-    三个 depthwise 卷积 (k=3/5/7, dilation=2) + concat + 1x1 fuse + 残差
-    """
+
     def __init__(self, in_ch, out_ch=None):
         super().__init__()
         out_ch = out_ch or in_ch
@@ -31,9 +29,7 @@ class MSLSB(nn.Module):
         return y + self.skip(x)
 
 class EGSB(nn.Module):
-    """Enhanced Global Scope Block (简化版):
-    多尺度 AvgPool(3/5/7) + 每支 1x1 conv + concat + 1x1 fuse + MLP(1x1) 残差
-    """
+
     def __init__(self, in_ch, out_ch=None, mlp_ratio=4.0):
         super().__init__()
         out_ch = out_ch or in_ch
@@ -77,7 +73,7 @@ def _try_import_mamba():
 _Mamba = _try_import_mamba()
 
 class Mamba2D(nn.Module):
-    """将 (B,C,H,W) 展平为序列做 Mamba；若无 mamba-ssm，则退化为 3x3 depthwise + 1x1。"""
+
     def __init__(self, ch):
         super().__init__()
         self.ch = ch
@@ -128,7 +124,7 @@ class Up(nn.Module):
 # ---------- Minimal WNet2D (3-level) ----------
 
 class WNet2D(nn.Module):
-    """极简三层版：MS-LSB -> (Down+EGSB)×2 -> Deep Mamba -> Up ×2 -> Head"""
+
     def __init__(self, in_channels=3, num_classes=1, base_ch=32):
         super().__init__()
         c1, c2, c3 = base_ch, base_ch*2, base_ch*4
