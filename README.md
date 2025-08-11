@@ -10,19 +10,11 @@ Mamba SSM (deepest stage): Efficient and stable long-range dependency modeling w
 Status: Minimal release — includes the model implementation and a simple inference demo. Training and full evaluation scripts may be released later.
 
 📂 Project Structure
-bash
-复制
-编辑
+
 WNet2D/
 ├─ README.md
-├─ LICENSE
-├─ src/wnet2d/
-│   ├─ __init__.py
-│   ├─ model.py      # WNet2D with MS-LSB / E-GSB / Mamba SSM
-│   ├─ ms_lsb.py
-│   ├─ e_gsb.py
-│   └─ m_gsb.py
-└─ demo_infer.py     # Minimal 10-line forward pass demo (1×3×512×512)
+├─ model.py    
+└─ demo_infer.py     
 💻 Environment & Installation
 Reference environment (from the paper):
 
@@ -35,8 +27,7 @@ Software: Python 3.9.23, PyTorch 2.1.2 (CUDA 11.8), cuDNN 8.7
 Quick install:
 
 bash
-复制
-编辑
+
 # (Optional) create a virtual environment
 conda create -n wnet2d python=3.9 -y
 conda activate wnet2d
